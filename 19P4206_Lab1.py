@@ -14,14 +14,17 @@ DataFrame = pd.DataFrame({'Region': ['India', 'Brazil', 'USA', 'Brazil', 'USA', 
 
 # Excluding data that is not numerical from data frame
 Numerical_Features = DataFrame.select_dtypes(exclude=['object']).columns.tolist()
+print("Numerical features: ")
 print(Numerical_Features)
 DataFrame_N = DataFrame[Numerical_Features]
+print("Numerical data frame: ")
 print(DataFrame_N)
 
 # Handling missing numerical data by using mean
 Imputer_Mean = SimpleImputer(missing_values=np.nan, strategy='mean')
 Imputer_Mean.fit(DataFrame_N)
 DataFrame_N = Imputer_Mean.transform(DataFrame_N)
+print("Numerical data frame after handling missing values: ")
 print(DataFrame_N)
 
 # Putting numerical data in data frame after data cleaning
@@ -29,19 +32,25 @@ DataFrame[Numerical_Features] = DataFrame_N
 
 
 # Discretization of numerical data into 3 bins using uniform strategy and ordinal encoding
-Categorize_Features = DataFrame.select_dtypes(exclude=['object']).columns.tolist()
-DataFrame_Categorize = DataFrame[Categorize_Features]
-est = KBinsDiscretizer(n_bins=3, strategy='uniform', encode='ordinal')
-c = est.fit(DataFrame_Categorize)
+Discretized_Numerical_Features = DataFrame.select_dtypes(exclude=['object']).columns.tolist()
+DataFrame_New = DataFrame[Discretized_Numerical_Features]
+Discretization = KBinsDiscretizer(n_bins=3, strategy='uniform', encode='ordinal')
+c = Discretization.fit(DataFrame_New)
+print("Discretization bin edges: ")
 print(c.bin_edges_)
-DataFrame_Categorize = est.transform(DataFrame_Categorize)
-print(DataFrame_Categorize)
+DataFrame_New = Discretization.transform(DataFrame_New)
+print("Discretization of numerical data: ")
+print(DataFrame_New)
 
 # Normalization of numerical data into min/max scaler using range (0,1)
+Normalized_Numerical_Features = DataFrame.select_dtypes(exclude=['object']).columns.tolist()
+DataFrame_New = DataFrame[Normalized_Numerical_Features]
 Normalizer = MinMaxScaler(feature_range=(0, 1))
-Norm_Data = Normalizer.fit_transform(DataFrame_N)
+Norm_Data = Normalizer.fit_transform(DataFrame_New)
+print("Normalization of numerical data: ")
 print(Norm_Data)
 
 # Putting all data in data frame after data transformation
-DataFrame[Numerical_Features] = Norm_Data
+DataFrame[Normalized_Numerical_Features] = Norm_Data
+print("The updated data frame: ")
 print(DataFrame)
